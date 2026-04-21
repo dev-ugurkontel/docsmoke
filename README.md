@@ -4,7 +4,7 @@
 [![PyPI](https://img.shields.io/pypi/v/docsmoke.svg)](https://pypi.org/project/docsmoke/)
 [![Release](https://img.shields.io/github/v/release/dev-ugurkontel/docsmoke?label=release&color=blue)](https://github.com/dev-ugurkontel/docsmoke/releases)
 [![Python](https://img.shields.io/pypi/pyversions/docsmoke.svg)](https://pypi.org/project/docsmoke/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Checked with mypy](https://img.shields.io/badge/mypy-strict-blue)](https://mypy.readthedocs.io/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
@@ -82,11 +82,11 @@ Supported directives:
 
 ## GitHub Action
 
-Use the moving `@v0` tag to receive compatible `0.x` fixes automatically, or
-pin an exact release such as `@v0.1.1` for fully reproducible workflow inputs.
+Use the moving `@v1` tag to receive compatible `1.x` fixes automatically, or
+pin an exact release such as `@v1.0.0` for fully reproducible workflow inputs.
 
 ```yaml
-- uses: dev-ugurkontel/docsmoke@v0
+- uses: dev-ugurkontel/docsmoke@v1
   with:
     paths: README.md docs examples
 ```
@@ -111,4 +111,4 @@ make all
 
 ## License
 
-MIT licensed. See [LICENSE](LICENSE).
+Apache 2.0 licensed. See [LICENSE](LICENSE).

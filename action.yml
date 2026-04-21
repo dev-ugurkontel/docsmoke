@@ -1,6 +1,6 @@
 name: docsmoke
 description: Validate executable Markdown snippets in CI.
-author: Ugur Kontel
+author: Uğur Kontel
 branding:
   icon: check-circle
   color: blue

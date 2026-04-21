@@ -5,38 +5,60 @@ GitHub Releases, GHCR, and the reusable GitHub Action.
 
 ## Version identifiers
 
-`docsmoke` uses related but different versioning surfaces:
+`docsmoke` uses two related but different versioning surfaces:
+
+- **Package release tags** such as `v1.0.0` are immutable release
+  markers for the Python package, GitHub Release assets, SBOMs,
+  signatures, and GHCR image tags.
+- **Major action tags** such as `v1` are moving compatibility tags for
+  the reusable GitHub Action. `v1` points to the latest compatible
+  `1.x` release, not specifically to `v1.0.0`.
+
+For example, after `v1.0.0` is released, both `v1.0.0` and `v1` point
+to the same release commit. Users can choose:
+
+```yaml
+# Gets compatible bug fixes on the 1.x line automatically.
+uses: dev-ugurkontel/docsmoke@v1
+
+# Pins the exact action release for maximum reproducibility.
+uses: dev-ugurkontel/docsmoke@v1.0.0
+```
+
+This follows GitHub's documented action-maintenance guidance: create
+semantic version tags such as `v1.0.0` and keep major tags such as `v1`
+current with the latest compatible release.
+
+## Why `1`, `1.0`, `1.0.0`, `v1`, and `v1.0.0` all exist
+
+The same release is named differently depending on where users consume
+it:
 
 | Surface | Example | Meaning |
 | ------- | ------- | ------- |
-| PyPI package | `0.1.1` | Exact Python package version installed by `pip` or `pipx`. |
-| GitHub Release tag | `v0.1.1` | Exact release commit and assets. The `v` prefix is a Git tag convention. |
-| GitHub Action tag | `v0` | Moving major tag for the latest compatible `0.x` action release. |
-| GHCR image tag | `0.1.1` | Exact container image for one release. |
-| GHCR image tag | `0.1` | Moving image tag for the latest compatible `0.1.x` patch. |
-| GHCR image tag | `0` | Moving image tag for the latest compatible `0.x` image. |
-| GHCR image tag | `latest` | Convenience image tag for the newest release. |
+| PyPI package | `1.0.0` | Exact Python package version installed by `pip` or `pipx`. |
+| GitHub Release tag | `v1.0.0` | Exact release commit and assets. The `v` prefix is a Git tag convention. |
+| GitHub Action tag | `v1` | Moving major tag for the latest compatible `1.x` action release. |
+| GHCR image tag | `1.0.0` | Exact container image for one release. |
+| GHCR image tag | `1.0` | Moving image tag for the latest compatible `1.0.x` patch. |
+| GHCR image tag | `1` | Moving image tag for the latest compatible `1.x` image. |
+| GHCR image tag | `latest` | Convenience image tag for the newest stable release. |
 
-Users can choose:
-
-```yaml
-# Gets compatible fixes on the 0.x line automatically.
-uses: dev-ugurkontel/docsmoke@v0
-
-# Pins the exact action release for maximum reproducibility.
-uses: dev-ugurkontel/docsmoke@v0.1.1
-```
-
-`v0` is expected to move. Exact tags such as `v0.1.1` should not move after a
-successful release.
+So `v1` does not mean "the original `v1.0.0` forever." It means "the
+latest compatible release on the `1.x` line." After the next compatible
+release, it is normal for `v1` to point at the same commit as that
+newest exact tag.
 
 ## Channels
 
 Each tagged release publishes four surfaces:
 
-- **PyPI**: the canonical Python package for `pip`, `pipx`, and virtualenvs.
-- **GitHub Releases**: wheel, sdist, CycloneDX SBOM, and Sigstore bundles.
-- **GHCR**: container tags for `latest`, major, major/minor, and exact version.
+- **PyPI**: the canonical Python package installed by `pip`, `pipx`, or
+  Python environments.
+- **GitHub Releases**: wheel, sdist, CycloneDX SBOM, and Sigstore
+  bundles.
+- **GHCR**: container tags for `latest`, major, major/minor, and exact
+  version, for example `latest`, `1`, `1.0`, and `1.0.0`.
 - **GitHub Action**: the repository root `action.yml`, consumed through
   `uses: dev-ugurkontel/docsmoke@...`.
 
@@ -52,55 +74,59 @@ flowchart LR
     checks --> review["Maintainer review"]
     review --> main["Squash merge to main"]
     main --> tag["Annotated vX.Y.Z tag"]
-    tag --> build["Build distributions"]
-    build --> approval["pypi environment approval"]
+    tag --> release["Release workflow"]
+    release --> approval["pypi environment approval"]
     approval --> pypi["Publish to PyPI"]
-    build --> ghcr["Publish GHCR image tags"]
-    pypi --> ghrel["GitHub Release assets"]
-    ghcr --> ghrel
-    ghrel --> major["Move v0 action tag"]
+    release --> ghrel["GitHub Release assets"]
+    release --> ghcr["GHCR image tags"]
+    release --> major["Move v1 action tag"]
 ```
 
 ## Required checks and approvals
 
-Changes to `main` should pass:
+Changes to `main` go through a pull request. The branch rules require:
 
-- Python 3.10, 3.11, 3.12, and 3.13 test matrix
-- Ruff lint and format checks
-- mypy strict type checks
-- Bandit static analysis
-- 100% line and branch coverage
-- Markdown link checks
-- `docsmoke scan README.md docs examples`
+- one approving review
+- code owner review
+- required status checks for Python 3.10, 3.11, 3.12, 3.13, and build
+  distribution
+- linear history and squash merges
 
-Recommended repository settings live in [docs/REPOSITORY.md](REPOSITORY.md).
+The `pypi` environment requires maintainer approval before the PyPI
+publish job can proceed. This is intentional. GitHub Actions cannot
+approve pull request reviews in this repository, and auto-merge is
+disabled.
 
 ## Release steps
 
 1. Update `pyproject.toml` with the new version.
 2. Add release notes to `CHANGELOG.md`.
-3. Open a pull request and wait for CI and Pages checks.
-4. Merge to `main` after review.
-5. Create and push the exact release tag:
+3. Open a pull request and wait for CI, Pages, and CodeQL checks.
+4. Merge with squash after review.
+5. Create and push the exact release tag, replacing `vX.Y.Z` with the
+   version being released:
 
    ```bash
-   git tag -a vX.Y.Z -m "docsmoke vX.Y.Z"
+   git tag -a vX.Y.Z -m "vX.Y.Z"
    git push origin vX.Y.Z
    ```
 
 6. Approve the `pypi` environment deployment when the release workflow pauses.
-7. Confirm PyPI, GitHub Release assets, GHCR tags, and the moving major action
+7. Confirm the release workflow completed successfully.
+8. Confirm PyPI, GitHub Release assets, GHCR tags, and the major action
    tag.
 
-After PyPI and GHCR publishing complete, the release workflow signs artifacts,
-creates or updates the GitHub Release, and updates the major action tag
-automatically:
+The release workflow updates the major action tag automatically:
 
 ```bash
-major="${TAG%%.*}"
-git tag -fa "$major" -m "Update $major to $TAG" "$GITHUB_SHA"
-git push origin "refs/tags/$major" --force
+git tag -fa v1 -m "Update v1 to vX.Y.Z" "$GITHUB_SHA"
+git push origin refs/tags/v1 --force
 ```
+
+Force-updating `v1` is expected because it is a moving compatibility
+tag. Exact tags such as `v1.0.0` should only be moved to recover from a
+failed release before users depend on it; normal releases should create
+a new exact tag.
 
 ## Failure recovery
 
@@ -112,16 +138,18 @@ If the release workflow fails after an exact tag has been pushed:
 3. Re-point the exact tag only if the failed release did not complete
    successfully.
 4. Re-run the tag-triggered workflow by pushing the corrected tag.
+5. Delete or cancel failed historical runs when GitHub permissions allow
+   it.
 
-Do not upload files manually to PyPI or GHCR unless automation is fully blocked
-and the manual action is documented in `CHANGELOG.md`.
+Never upload files manually to PyPI or GHCR unless automation is fully
+blocked and the manual action is documented in `CHANGELOG.md`.
 
 ## Post-release checklist
 
-- `gh release view vX.Y.Z` lists wheel, sdist, SBOM, and Sigstore JSON files.
+- `gh release view vX.Y.Z` lists wheel, sdist, SBOM, and Sigstore JSON
+  files.
 - PyPI reports the new version.
 - GHCR exposes `latest`, major, major/minor, and exact version tags.
-- `git rev-parse v0^{commit}` matches `git rev-parse vX.Y.Z^{commit}` for
-  `0.x` releases.
-- `docsmoke --version` prints the released package version.
+- `git rev-parse v1^{commit}` matches `git rev-parse vX.Y.Z^{commit}`.
+- `gh run list --limit 10` shows no current failed release run.
 - The local tree is clean after `make clean`.

@@ -54,7 +54,7 @@ def test_version_flag() -> None:
     result = runner.invoke(app, ["--version"])
 
     assert result.exit_code == 0
-    assert "docsmoke 0.1.1" in result.stdout
+    assert "docsmoke 1.0.0" in result.stdout
 
 
 def test_scan_rejects_unknown_output_format(tmp_path) -> None:

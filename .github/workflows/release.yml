@@ -109,7 +109,7 @@ jobs:
 
   sign-and-release:
     name: Sign artifacts and create GitHub Release
-    needs: [build, publish-pypi, publish-ghcr]
+    needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

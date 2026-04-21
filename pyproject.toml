@@ -4,12 +4,12 @@ build-backend = "hatchling.build"
 
 [project]
 name = "docsmoke"
-version = "0.1.1"
+version = "1.0.0"
 description = "Executable documentation smoke tests for Markdown snippets."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
-authors = [{ name = "Ugur Kontel" }]
+authors = [{ name = "Uğur Kontel" }]
 keywords = [
     "documentation",
     "markdown",
@@ -22,10 +22,10 @@ keywords = [
     "github-actions",
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
@@ -72,6 +72,7 @@ packages = ["src/docsmoke"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "src/docsmoke/py.typed" = "docsmoke/py.typed"
+"NOTICE" = "NOTICE"
 
 [tool.docsmoke]
 include = ["README.md", "docs/**/*.md", "examples/**/*.md"]
