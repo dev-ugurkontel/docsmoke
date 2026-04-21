@@ -29,4 +29,3 @@ body:
         - CI / GitHub Action
     validations:
       required: true
-

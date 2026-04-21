@@ -64,4 +64,3 @@ Changes to `main` should pass:
 - `git rev-parse v0^{commit}` matches `git rev-parse vX.Y.Z^{commit}` for
   `0.x` releases.
 - The local tree is clean after `make clean`.
-

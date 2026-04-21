@@ -12,4 +12,3 @@ Explain what changed and why.
 ## Notes
 
 Trade-offs, follow-up work, or rollout details.
-

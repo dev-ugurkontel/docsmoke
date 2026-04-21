@@ -29,4 +29,3 @@ ENV PATH="/home/app/.local/bin:${PATH}"
 
 ENTRYPOINT ["docsmoke"]
 CMD ["--help"]
-

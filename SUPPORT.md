@@ -41,4 +41,3 @@ Use the private security reporting flow instead:
 If your idea changes the project's scope substantially, open a discussion
 first. `docsmoke` aims to stay focused on executable documentation smoke
 tests rather than becoming a full Markdown linter or documentation platform.
-

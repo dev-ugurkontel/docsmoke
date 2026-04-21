@@ -24,4 +24,3 @@ require_directive = true
 - `default_timeout`: snippet timeout in seconds
 - `fail_fast`: stop the scan after the first failure
 - `require_directive`: only execute snippets explicitly marked for docsmoke
-
