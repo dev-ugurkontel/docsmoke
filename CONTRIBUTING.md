@@ -17,6 +17,7 @@ make all
 2. Keep changes focused and well-tested.
 3. Update docs for user-facing behavior changes.
 4. Add or update tests for code changes.
+5. Keep commit messages intentional and release-note friendly.
 
 ## Tooling
 
@@ -25,3 +26,16 @@ make all
 - `pytest` for tests
 - `pre-commit` for local checks
 
+## Branching and releases
+
+- Default branch: `main`
+- Feature branches: `feat/<slug>` or `fix/<slug>`
+- Release tags: `vMAJOR.MINOR.PATCH`
+- Changelog entries belong under `[Unreleased]` until release day
+
+## Good first contributions
+
+- Add new snippet fixtures for real-world docs layouts
+- Improve renderer output
+- Add executor support for another runtime
+- Tighten docs around CI and onboarding workflows

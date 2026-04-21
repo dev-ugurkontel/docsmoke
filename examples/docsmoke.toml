@@ -1,0 +1,6 @@
+include = ["README.md", "docs/**/*.md", "examples/**/*.md"]
+exclude = [".venv/**", "build/**", "dist/**"]
+default_timeout = 10.0
+fail_fast = false
+require_directive = true
+
