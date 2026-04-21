@@ -67,3 +67,42 @@ def test_collect_snippets_from_directory_and_excludes_paths(tmp_path) -> None:
 
     assert len(snippets) == 1
     assert snippets[0].path.name == "good.md"
+
+
+def test_collect_snippets_accepts_explicit_markdown_file(tmp_path) -> None:
+    readme = tmp_path / "README.md"
+    readme.write_text("```bash docsmoke\nprintf 'hello\\n'\n```\n", encoding="utf-8")
+    config = Config(project_root=tmp_path)
+
+    snippets = collect_snippets([readme], config=config)
+
+    assert len(snippets) == 1
+    assert snippets[0].path == readme.resolve()
+
+
+def test_collect_snippets_ignores_explicit_non_markdown_file(tmp_path) -> None:
+    text_file = tmp_path / "README.txt"
+    text_file.write_text("```bash docsmoke\nprintf 'hello\\n'\n```\n", encoding="utf-8")
+    config = Config(project_root=tmp_path)
+
+    assert collect_snippets([text_file], config=config) == []
+
+
+def test_collect_snippets_ignores_globbed_directories(tmp_path) -> None:
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    config = Config(project_root=tmp_path, include=("docs",))
+
+    assert collect_snippets([], config=config) == []
+
+
+def test_collect_snippets_does_not_exclude_paths_outside_project(tmp_path) -> None:
+    outside = tmp_path.parent / f"{tmp_path.name}-outside.md"
+    outside.write_text("```bash docsmoke\nprintf 'hello\\n'\n```\n", encoding="utf-8")
+    config = Config(project_root=tmp_path)
+    try:
+        snippets = collect_snippets([outside], config=config)
+    finally:
+        outside.unlink()
+
+    assert len(snippets) == 1

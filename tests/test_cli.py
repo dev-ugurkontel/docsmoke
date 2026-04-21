@@ -4,7 +4,7 @@ import json
 
 from typer.testing import CliRunner
 
-from docsmoke.cli import app
+from docsmoke.cli import _resolve_config, app
 
 runner = CliRunner()
 
@@ -54,7 +54,7 @@ def test_version_flag() -> None:
     result = runner.invoke(app, ["--version"])
 
     assert result.exit_code == 0
-    assert "docsmoke 0.1.0" in result.stdout
+    assert "docsmoke 0.1.1" in result.stdout
 
 
 def test_scan_rejects_unknown_output_format(tmp_path) -> None:
@@ -91,3 +91,32 @@ def test_list_snippets_table_output(tmp_path) -> None:
 
     assert result.exit_code == 0
     assert "table-case" in result.stdout
+
+
+def test_scan_prints_console_report(tmp_path) -> None:
+    markdown_path = tmp_path / "README.md"
+    markdown_path.write_text(
+        "```bash docsmoke\nprintf 'hello\\n'\n```\n",
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["scan", str(markdown_path)])
+
+    assert result.exit_code == 0
+    assert "Summary:" in result.stdout
+
+
+def test_list_snippets_surfaces_config_errors(tmp_path) -> None:
+    result = runner.invoke(app, ["list-snippets", "--config", str(tmp_path / "missing.toml")])
+
+    assert result.exit_code == 2
+    assert "config file does not exist" in (result.stdout + result.stderr)
+
+
+def test_resolve_config_applies_cli_overrides(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+
+    config = _resolve_config(None, all_supported=True, fail_fast=True)
+
+    assert config.require_directive is False
+    assert config.fail_fast is True

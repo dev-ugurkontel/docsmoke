@@ -1,0 +1,89 @@
+:root {
+  color-scheme: light;
+  --ink: #182033;
+  --muted: #5c667a;
+  --paper: #fffaf0;
+  --accent: #e05d44;
+  --line: #ead8bd;
+  --code: #101828;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(224, 93, 68, 0.18), transparent 32rem),
+    linear-gradient(135deg, #fffaf0 0%, #f8efe2 48%, #fff 100%);
+  color: var(--ink);
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  line-height: 1.6;
+}
+
+main {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 5rem 1.5rem;
+}
+
+.hero {
+  display: grid;
+  gap: 1.5rem;
+  padding: 3rem;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  box-shadow: 0 24px 80px rgba(24, 32, 51, 0.12);
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(3rem, 10vw, 6.5rem);
+  line-height: 0.9;
+  letter-spacing: -0.08em;
+}
+
+h2 {
+  margin-top: 3rem;
+  font-size: 1.75rem;
+}
+
+p {
+  max-width: 65ch;
+}
+
+.tagline {
+  color: var(--accent);
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.card {
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+}
+
+pre {
+  overflow-x: auto;
+  padding: 1.25rem;
+  background: var(--code);
+  color: #f8fafc;
+  border-radius: 18px;
+}
+
+a {
+  color: var(--accent);
+  font-weight: 700;
+}
+

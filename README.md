@@ -80,7 +80,7 @@ Supported directives:
 ## GitHub Action
 
 ```yaml
-- uses: dev-ugurkontel/docsmoke@v0.1.0
+- uses: dev-ugurkontel/docsmoke@v0.1.1
   with:
     paths: README.md docs examples
 ```
@@ -93,6 +93,7 @@ Supported directives:
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): internal architecture
 - [CONTRIBUTING.md](CONTRIBUTING.md): contribution workflow
 - [SECURITY.md](SECURITY.md): private vulnerability disclosure
+- [SUPPORT.md](SUPPORT.md): usage help and issue routing
 
 ## Development
 

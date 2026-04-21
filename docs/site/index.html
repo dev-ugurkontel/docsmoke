@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>docsmoke - Docs should fail like code</title>
+    <meta
+      name="description"
+      content="Executable documentation smoke tests for Markdown snippets."
+    />
+    <link rel="stylesheet" href="./assets/site.css" />
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <h1>docsmoke</h1>
+        <p class="tagline">Docs should fail like code.</p>
+        <p>
+          Validate executable Markdown snippets before quickstarts, install
+          guides, and CLI examples drift out of sync with your project.
+        </p>
+        <pre><code>pipx install docsmoke
+docsmoke scan README.md docs examples</code></pre>
+        <p>
+          <a href="https://github.com/dev-ugurkontel/docsmoke">View on GitHub</a>
+          ·
+          <a href="https://pypi.org/project/docsmoke/">Install from PyPI</a>
+        </p>
+      </section>
+
+      <h2>Why maintainers use it</h2>
+      <div class="grid">
+        <article class="card">
+          <strong>Catch docs drift</strong>
+          <p>Run shell and Python examples from Markdown in CI.</p>
+        </article>
+        <article class="card">
+          <strong>Assert behavior</strong>
+          <p>Use inline directives for expected text, regexes, timeouts, and env vars.</p>
+        </article>
+        <article class="card">
+          <strong>Ship confidently</strong>
+          <p>Fail pull requests when docs no longer match reality.</p>
+        </article>
+      </div>
+    </main>
+  </body>
+</html>

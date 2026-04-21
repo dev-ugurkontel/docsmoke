@@ -67,9 +67,43 @@ def test_config_validates_non_empty_include() -> None:
         Config(project_root=Path.cwd(), include=())
 
 
+def test_config_validates_include_item_types() -> None:
+    with pytest.raises(ConfigError):
+        Config(project_root=Path.cwd(), include=("",))
+
+
+def test_config_validates_exclude_item_types() -> None:
+    with pytest.raises(ConfigError):
+        Config(project_root=Path.cwd(), exclude=("",))
+
+
 def test_load_rejects_invalid_boolean_values(tmp_path) -> None:
     path = tmp_path / "docsmoke.toml"
     path.write_text("fail_fast = 'no'\n", encoding="utf-8")
+
+    with pytest.raises(ConfigError):
+        load(path)
+
+
+def test_load_rejects_invalid_require_directive_value(tmp_path) -> None:
+    path = tmp_path / "docsmoke.toml"
+    path.write_text("require_directive = 'yes'\n", encoding="utf-8")
+
+    with pytest.raises(ConfigError):
+        load(path)
+
+
+def test_load_rejects_non_list_include(tmp_path) -> None:
+    path = tmp_path / "docsmoke.toml"
+    path.write_text("include = 42\n", encoding="utf-8")
+
+    with pytest.raises(ConfigError):
+        load(path)
+
+
+def test_load_rejects_invalid_include_items(tmp_path) -> None:
+    path = tmp_path / "docsmoke.toml"
+    path.write_text("include = ['README.md', '']\n", encoding="utf-8")
 
     with pytest.raises(ConfigError):
         load(path)
