@@ -64,6 +64,10 @@ warn_unused_ignores = true
 show_error_codes = true
 pretty = true
 
+[[tool.mypy.overrides]]
+module = ["tomllib", "tomli"]
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 minversion = "8.0"
 addopts = [
@@ -88,4 +92,3 @@ exclude_lines = [
     "if TYPE_CHECKING:",
     "if __name__ == .__main__.:",
 ]
-
