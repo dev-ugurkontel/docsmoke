@@ -1,9 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Security vulnerability (private)
-    url: mailto:dev.ugurkontel@gmail.com
-    about: Please report security issues privately.
+    url: https://github.com/dev-ugurkontel/docsmoke/security/advisories/new
+    about: For vulnerabilities in docsmoke itself, please report privately.
   - name: Discussions
     url: https://github.com/dev-ugurkontel/docsmoke/discussions
     about: Ask questions and share ideas.
-

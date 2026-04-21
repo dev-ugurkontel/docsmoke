@@ -28,4 +28,3 @@
 - Add new executors
 - Add new report formats
 - Add richer discovery heuristics for docs linting and drift risk analysis
-

@@ -1,4 +1,4 @@
-.PHONY: help install format lint typecheck test coverage build all clean
+.PHONY: help install format lint typecheck security test coverage build docker all clean
 
 PYTHON ?= python3
 VENV ?= .venv
@@ -30,6 +30,9 @@ lint: ## Run lint and format checks
 typecheck: ## Run strict type checks
 	$(BIN)/mypy src
 
+security: ## Run bandit static analysis
+	$(BIN)/bandit -q -r src -c pyproject.toml
+
 test: ## Run the test suite
 	$(BIN)/pytest
 
@@ -40,7 +43,10 @@ build: ## Build wheel and sdist
 	$(BIN)/python -m pip install --upgrade build
 	$(BIN)/python -m build
 
-all: lint typecheck test ## Run all quality gates
+docker: ## Build docker image
+	docker build -t docsmoke:local .
+
+all: lint typecheck security test ## Run all quality gates
 
 clean: ## Remove caches and build artifacts
 	rm -rf .coverage .mypy_cache .pytest_cache .ruff_cache .venv build dist htmlcov coverage.xml src/*.egg-info src/**/__pycache__ tests/**/__pycache__

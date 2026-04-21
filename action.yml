@@ -1,15 +1,38 @@
 name: docsmoke
 description: Validate executable Markdown snippets in CI.
 author: Ugur Kontel
+branding:
+  icon: check-circle
+  color: blue
+
 inputs:
   paths:
     description: Space-separated Markdown files or directories to scan.
+    required: false
+    default: ""
+  python-version:
+    description: Python version used to install and run docsmoke.
+    required: false
+    default: "3.12"
+  package-spec:
+    description: >-
+      Optional pip install spec, for example `docsmoke==<exact-version>`.
+      When omitted, the action installs the checked-out action source so
+      the action ref and tool version stay aligned.
     required: false
     default: ""
   config:
     description: Optional path to docsmoke.toml or pyproject.toml.
     required: false
     default: ""
+  output:
+    description: Optional output file path. When set, `format` is also used.
+    required: false
+    default: ""
+  format:
+    description: Output format used with `output`.
+    required: false
+    default: "markdown"
   all-supported:
     description: Execute all supported fenced blocks, even when not explicitly marked.
     required: false
@@ -18,39 +41,70 @@ inputs:
     description: Stop after the first failing snippet.
     required: false
     default: "false"
+  extra-args:
+    description: Optional additional CLI arguments, one argument per line.
+    required: false
+    default: ""
 runs:
   using: composite
   steps:
     - name: Set up Python
-      uses: actions/setup-python@v6.2.0
+      uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
       with:
-        python-version: "3.12"
+        python-version: ${{ inputs.python-version }}
 
     - name: Install docsmoke
       shell: bash
+      env:
+        PACKAGE_SPEC: ${{ inputs.package-spec }}
+        ACTION_PATH: ${{ github.action_path }}
       run: |
+        set -euo pipefail
         python -m pip install --upgrade pip
-        python -m pip install "$GITHUB_ACTION_PATH"
+        if [[ -n "$PACKAGE_SPEC" ]]; then
+          python -m pip install "$PACKAGE_SPEC"
+        else
+          python -m pip install "$ACTION_PATH"
+        fi
 
     - name: Run docsmoke
       shell: bash
+      env:
+        PATHS: ${{ inputs.paths }}
+        CONFIG: ${{ inputs.config }}
+        OUTPUT: ${{ inputs.output }}
+        FORMAT: ${{ inputs.format }}
+        ALL_SUPPORTED: ${{ inputs.all-supported }}
+        FAIL_FAST: ${{ inputs.fail-fast }}
+        EXTRA_ARGS: ${{ inputs.extra-args }}
       run: |
+        set -euo pipefail
         args=()
-        if [ -n "${{ inputs.config }}" ]; then
-          args+=(--config "${{ inputs.config }}")
+        if [[ -n "$CONFIG" ]]; then
+          args+=(--config "$CONFIG")
         fi
-        if [ "${{ inputs.all-supported }}" = "true" ]; then
+        if [[ -n "$OUTPUT" ]]; then
+          args+=(--output "$OUTPUT" --format "$FORMAT")
+        fi
+        if [[ "$ALL_SUPPORTED" = "true" ]]; then
           args+=(--all-supported)
         fi
-        if [ "${{ inputs.fail-fast }}" = "true" ]; then
+        if [[ "$FAIL_FAST" = "true" ]]; then
           args+=(--fail-fast)
         fi
-        if [ -n "${{ inputs.paths }}" ]; then
-          read -r -a path_args <<< "${{ inputs.paths }}"
+        if [[ -n "$EXTRA_ARGS" ]]; then
+          while IFS= read -r arg; do
+            if [[ -n "$arg" ]]; then
+              args+=("$arg")
+            fi
+          done <<< "$EXTRA_ARGS"
+        fi
+        if [[ -n "$PATHS" ]]; then
+          read -r -a path_args <<< "$PATHS"
           args+=("${path_args[@]}")
         fi
-        docsmoke scan "${args[@]}"
-branding:
-  icon: check-circle
-  color: blue
 
+        printf 'Running: docsmoke scan'
+        printf ' %q' "${args[@]}"
+        printf '\n'
+        docsmoke scan "${args[@]}"

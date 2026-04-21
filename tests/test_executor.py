@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from docsmoke.executor import run_snippet
+from docsmoke.executor import _coerce_output, _prepend_executable_dir, run_snippet
 from docsmoke.models import Snippet, SnippetDirectives, SnippetStatus
 
 
@@ -44,6 +44,20 @@ def test_run_shell_snippet_fails_on_missing_expectation(tmp_path) -> None:
 
     assert result.status is SnippetStatus.failed
     assert "missing expected text" in result.message
+
+
+def test_run_shell_snippet_fails_on_exit_code(tmp_path) -> None:
+    snippet = _snippet(
+        language="bash",
+        executor="sh",
+        code="exit 7",
+        directives=SnippetDirectives(),
+    )
+
+    result = run_snippet(snippet, project_root=tmp_path, default_timeout=5.0)
+
+    assert result.status is SnippetStatus.failed
+    assert result.message == "snippet exited with code 7"
 
 
 def test_run_python_snippet_with_env(tmp_path) -> None:
@@ -129,6 +143,19 @@ def test_regex_expectation_failure(tmp_path) -> None:
     assert "regex" in result.message
 
 
+def test_regex_expectation_success(tmp_path) -> None:
+    snippet = _snippet(
+        language="bash",
+        executor="sh",
+        code="printf 'release 123\\n'",
+        directives=SnippetDirectives(expect_regex=(r"release \d+",)),
+    )
+
+    result = run_snippet(snippet, project_root=tmp_path, default_timeout=5.0)
+
+    assert result.status is SnippetStatus.passed
+
+
 def test_cwd_is_resolved_from_project_root(tmp_path) -> None:
     working_dir = tmp_path / "nested"
     working_dir.mkdir()
@@ -149,9 +176,19 @@ def test_executor_prepends_current_python_bin_to_path(tmp_path) -> None:
         language="bash",
         executor="sh",
         code="docsmoke --version",
-        directives=SnippetDirectives(expect_contains=("docsmoke 0.1.0",)),
+        directives=SnippetDirectives(expect_contains=("docsmoke 0.1.1",)),
     )
 
     result = run_snippet(snippet, project_root=tmp_path, default_timeout=5.0)
 
     assert result.status is SnippetStatus.passed
+
+
+def test_coerce_output_handles_none_bytes_and_string() -> None:
+    assert _coerce_output(None) == ""
+    assert _coerce_output(b"hello\xff").startswith("hello")
+    assert _coerce_output("hello") == "hello"
+
+
+def test_prepend_executable_dir_handles_empty_path() -> None:
+    assert _prepend_executable_dir("")
