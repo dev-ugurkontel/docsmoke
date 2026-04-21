@@ -7,7 +7,13 @@ Versioning.
 
 ## [Unreleased]
 
-Nothing yet.
+- Expanded README, installation, usage, architecture, and repository docs to
+  match the release/documentation quality bar of `surface-audit`.
+- Added practical CI, Docker, gradual-adoption, and JSON-consumer recipes.
+- Added a JSON report schema and schema validation regression test.
+- Refreshed the GitHub Pages site with richer project positioning, release
+  surfaces, sample output, and documentation links.
+- Added Dependabot tracking for Dockerfile base image updates.
 
 ## [1.0.0] - 2026-04-21
 

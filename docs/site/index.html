@@ -3,64 +3,197 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>docsmoke - Docs should fail like code</title>
+    <title>docsmoke - Executable documentation smoke tests</title>
     <meta
       name="description"
+      content="docsmoke runs marked Markdown shell and Python snippets so quickstarts, install guides, and CLI examples fail in CI when they drift."
+    />
+    <meta name="theme-color" content="#f8fafc" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="docsmoke - Docs should fail like code" />
+    <meta
+      property="og:description"
       content="Executable documentation smoke tests for Markdown snippets."
     />
+    <meta property="og:url" content="https://dev-ugurkontel.github.io/docsmoke/" />
+    <meta property="og:site_name" content="docsmoke" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="docsmoke" />
+    <meta
+      name="twitter:description"
+      content="Run marked Markdown snippets and fail CI when documentation examples drift."
+    />
+    <link rel="canonical" href="https://dev-ugurkontel.github.io/docsmoke/" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@300;400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="./assets/site.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "docsmoke",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "macOS, Linux, Windows",
+        "description": "Executable documentation smoke tests for Markdown snippets.",
+        "url": "https://github.com/dev-ugurkontel/docsmoke",
+        "license": "https://github.com/dev-ugurkontel/docsmoke/blob/main/LICENSE",
+        "downloadUrl": "https://pypi.org/project/docsmoke/"
+      }
+    </script>
   </head>
   <body>
-    <main>
-      <section class="hero">
-        <h1>docsmoke</h1>
-        <p class="tagline">Docs should fail like code.</p>
-        <p>
-          Validate executable Markdown snippets before quickstarts, install
-          guides, and CLI examples drift out of sync with your project.
-        </p>
-        <pre><code>pipx install docsmoke
-docsmoke scan README.md docs examples</code></pre>
-        <p>
-          <a href="https://github.com/dev-ugurkontel/docsmoke">View on GitHub</a>
-          ·
-          <a href="https://pypi.org/project/docsmoke/">Install from PyPI</a>
-          ·
-          <a href="https://github.com/dev-ugurkontel/docsmoke/blob/main/docs/RELEASE.md">Release process</a>
-        </p>
-      </section>
+    <div class="wrap">
+      <header class="topbar">
+        <a class="brand" href="https://github.com/dev-ugurkontel/docsmoke">docsmoke</a>
+        <nav aria-label="Primary">
+          <a href="https://github.com/dev-ugurkontel/docsmoke">GitHub</a>
+          <a href="https://pypi.org/project/docsmoke/">PyPI</a>
+          <a href="https://github.com/dev-ugurkontel/docsmoke/blob/main/docs/RECIPES.md">Recipes</a>
+          <a href="https://github.com/dev-ugurkontel/docsmoke/releases">Releases</a>
+        </nav>
+      </header>
 
-      <h2>Why maintainers use it</h2>
-      <div class="grid">
-        <article class="card">
-          <strong>Catch docs drift</strong>
-          <p>Run shell and Python examples from Markdown in CI.</p>
-        </article>
-        <article class="card">
-          <strong>Assert behavior</strong>
-          <p>Use inline directives for expected text, regexes, timeouts, and env vars.</p>
-        </article>
-        <article class="card">
-          <strong>Ship confidently</strong>
-          <p>Fail pull requests when docs no longer match reality.</p>
-        </article>
-      </div>
+      <main>
+        <section class="hero">
+          <p class="kicker">executable documentation smoke tests</p>
+          <h1>Docs should fail like code.</h1>
+          <p class="lede">
+            <strong>docsmoke</strong> runs the Markdown shell and Python examples you mark in
+            README files, install guides, and docs folders, then turns broken snippets into CI
+            failures with precise file and line references.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="https://pypi.org/project/docsmoke/">Install from PyPI</a>
+            <a class="button" href="https://github.com/dev-ugurkontel/docsmoke#github-action">Use the action</a>
+          </div>
+          <div class="facts" aria-label="Project facts">
+            <div><strong>opt-in</strong><span>marked snippets only</span></div>
+            <div><strong>assertive</strong><span>text and regex checks</span></div>
+            <div><strong>CI-native</strong><span>console, JSON, Markdown</span></div>
+            <div><strong>published</strong><span>PyPI, GHCR, Action</span></div>
+          </div>
+        </section>
 
-      <h2>Version surfaces</h2>
-      <div class="grid">
-        <article class="card">
-          <strong>PyPI</strong>
-          <p><code>1.0.0</code> is the Python package version.</p>
-        </article>
-        <article class="card">
-          <strong>GitHub Action</strong>
-          <p><code>@v1</code> follows the latest compatible 1.x release.</p>
-        </article>
-        <article class="card">
-          <strong>Exact release</strong>
-          <p><code>@v1.0.0</code> pins one immutable release tag.</p>
-        </article>
-      </div>
-    </main>
+        <hr />
+
+        <section class="chapter">
+          <p class="label">The problem</p>
+          <h2>Documentation examples rot quietly.</h2>
+          <div class="rule"></div>
+          <p>
+            A README command can break after a dependency update, CLI rename, fixture move, or
+            release packaging change. Ordinary tests usually miss that drift because the example
+            lives in prose instead of the test suite.
+          </p>
+          <p>
+            docsmoke keeps the workflow narrow. It is not a full Markdown linter and not a
+            sandbox. It answers one direct question: <strong>do the examples we promised users
+            still run?</strong>
+          </p>
+        </section>
+
+        <hr />
+
+        <section class="chapter">
+          <p class="label">The marker</p>
+          <h2>Language first, execution marker second.</h2>
+          <div class="rule"></div>
+          <p>
+            In <code>```bash docsmoke</code>, <code>bash</code> still drives syntax highlighting.
+            The extra <code>docsmoke</code> token is the opt-in marker that makes the block
+            executable.
+          </p>
+          <pre class="code-block">```bash docsmoke
+# docsmoke: name=hello; expect-contains=hello
+printf 'hello\n'
+```</pre>
+        </section>
+
+        <hr />
+
+        <section class="chapter">
+          <p class="label">The workflow</p>
+          <h2>Mark, scan, gate.</h2>
+          <div class="rule"></div>
+          <div class="steps">
+            <div class="step"><span>01</span><strong>Mark stable examples</strong><em>Leave illustrative fragments unmarked.</em></div>
+            <div class="step"><span>02</span><strong>Add expectations</strong><em>Check text, regexes, exit codes, and timeouts.</em></div>
+            <div class="step"><span>03</span><strong>Run in CI</strong><em>Scan README, docs, and examples on every pull request.</em></div>
+            <div class="step"><span>04</span><strong>Inspect reports</strong><em>Use console locally, JSON or Markdown in automation.</em></div>
+          </div>
+          <pre class="code-block">pipx install docsmoke
+docsmoke scan README.md docs examples</pre>
+        </section>
+
+        <hr />
+
+        <section class="chapter">
+          <p class="label">GitHub Actions</p>
+          <h2>Use the moving major tag, or pin the exact release.</h2>
+          <div class="rule"></div>
+          <p>
+            <code>@v1</code> is the stable 1.x action line. It moves to the newest compatible
+            release, so users get fixes. <code>@v1.0.0</code> is an exact release tag for
+            workflows that need maximum reproducibility.
+          </p>
+          <pre class="code-block">- name: Validate executable docs
+  uses: dev-ugurkontel/docsmoke@v1
+  with:
+    paths: README.md docs examples</pre>
+        </section>
+
+        <hr />
+
+        <section class="chapter">
+          <p class="label">Version surfaces</p>
+          <h2>There are four names because there are four distribution surfaces.</h2>
+          <div class="rule"></div>
+          <div class="matrix" role="list">
+            <div role="listitem"><strong>PyPI</strong><span><code>1.0.0</code> is the Python package version.</span></div>
+            <div role="listitem"><strong>GitHub Release</strong><span><code>v1.0.0</code> marks the exact release commit and assets.</span></div>
+            <div role="listitem"><strong>GitHub Action</strong><span><code>v1</code> moves to the latest compatible 1.x action release.</span></div>
+            <div role="listitem"><strong>GHCR</strong><span><code>1</code>, <code>1.0</code>, <code>1.0.0</code>, and <code>latest</code> are container image tags.</span></div>
+          </div>
+        </section>
+
+        <hr />
+
+        <section class="chapter">
+          <p class="label">Sample report</p>
+          <h2>Readable locally, structured in automation.</h2>
+          <div class="rule"></div>
+          <div class="terminal" aria-label="Sample docsmoke console output">
+            <div class="terminal-bar"><span></span><span></span><span></span></div>
+            <pre>docsmoke
+passed  examples/README.md:5  bash  0.004s  ok
+
+Summary: total=1 passed=1 failed=0 skipped=0 errors=0</pre>
+          </div>
+        </section>
+
+        <hr />
+
+        <section class="chapter">
+          <p class="label">Docs</p>
+          <h2>Start small, then wire it into release gates.</h2>
+          <div class="rule"></div>
+          <div class="links">
+            <a href="https://github.com/dev-ugurkontel/docsmoke/blob/main/README.md"><strong>README</strong><span>Positioning, quick start, and common paths.</span></a>
+            <a href="https://github.com/dev-ugurkontel/docsmoke/blob/main/docs/RECIPES.md"><strong>Recipes</strong><span>CI artifacts, gradual adoption, Docker, and JSON consumers.</span></a>
+            <a href="https://github.com/dev-ugurkontel/docsmoke/blob/main/docs/REPORT_SCHEMA.md"><strong>Report schema</strong><span>Stable JSON report contract for automation.</span></a>
+            <a href="https://github.com/dev-ugurkontel/docsmoke/blob/main/docs/RELEASE.md"><strong>Release process</strong><span>PyPI, GHCR, GitHub Releases, and action tags.</span></a>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <span>Apache 2.0.</span>
+        <span>Published on PyPI, GitHub Releases, GHCR, and GitHub Actions.</span>
+      </footer>
+    </div>
   </body>
 </html>

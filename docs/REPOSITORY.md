@@ -32,7 +32,6 @@ Required checks:
 - `Python 3.12`
 - `Python 3.13`
 - `Build distribution`
-- `pages / Build Pages artifact`
 
 ## Actions
 
@@ -65,6 +64,9 @@ Enable:
 - Secret scanning
 - Push protection for detected secrets
 - Code scanning alerts when CodeQL is enabled for the repository
+
+CodeQL default setup should be enabled for Python with the default query
+suite and weekly schedule.
 
 ## Labels
 
