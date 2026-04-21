@@ -1,0 +1,32 @@
+name: Feature request
+description: Propose a new capability or improvement.
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement
+      description: What workflow is currently painful or missing?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What would you like docsmoke to do?
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Discovery
+        - Executor
+        - Reporting
+        - Configuration
+        - Documentation
+        - CI / GitHub Action
+    validations:
+      required: true
+

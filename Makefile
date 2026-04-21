@@ -13,7 +13,11 @@ $(BIN)/python:
 
 install: $(BIN)/python ## Install project with dev extras
 	$(BIN)/pip install -e ".[dev]"
-	$(BIN)/pre-commit install
+	@if git config --get core.hooksPath >/dev/null; then \
+		echo "Skipping pre-commit install because core.hooksPath is set."; \
+	else \
+		$(BIN)/pre-commit install; \
+	fi
 
 format: ## Auto-format the codebase
 	$(BIN)/ruff format .
@@ -40,4 +44,3 @@ all: lint typecheck test ## Run all quality gates
 
 clean: ## Remove caches and build artifacts
 	rm -rf .coverage .mypy_cache .pytest_cache .ruff_cache .venv build dist htmlcov coverage.xml src/*.egg-info src/**/__pycache__ tests/**/__pycache__
-

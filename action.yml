@@ -1,0 +1,56 @@
+name: docsmoke
+description: Validate executable Markdown snippets in CI.
+author: Ugur Kontel
+inputs:
+  paths:
+    description: Space-separated Markdown files or directories to scan.
+    required: false
+    default: ""
+  config:
+    description: Optional path to docsmoke.toml or pyproject.toml.
+    required: false
+    default: ""
+  all-supported:
+    description: Execute all supported fenced blocks, even when not explicitly marked.
+    required: false
+    default: "false"
+  fail-fast:
+    description: Stop after the first failing snippet.
+    required: false
+    default: "false"
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v6.2.0
+      with:
+        python-version: "3.12"
+
+    - name: Install docsmoke
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install "$GITHUB_ACTION_PATH"
+
+    - name: Run docsmoke
+      shell: bash
+      run: |
+        args=()
+        if [ -n "${{ inputs.config }}" ]; then
+          args+=(--config "${{ inputs.config }}")
+        fi
+        if [ "${{ inputs.all-supported }}" = "true" ]; then
+          args+=(--all-supported)
+        fi
+        if [ "${{ inputs.fail-fast }}" = "true" ]; then
+          args+=(--fail-fast)
+        fi
+        if [ -n "${{ inputs.paths }}" ]; then
+          read -r -a path_args <<< "${{ inputs.paths }}"
+          args+=("${path_args[@]}")
+        fi
+        docsmoke scan "${args[@]}"
+branding:
+  icon: check-circle
+  color: blue
+
