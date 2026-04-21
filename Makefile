@@ -49,4 +49,6 @@ docker: ## Build docker image
 all: lint typecheck security test ## Run all quality gates
 
 clean: ## Remove caches and build artifacts
-	rm -rf .coverage .mypy_cache .pytest_cache .ruff_cache .venv build dist htmlcov coverage.xml src/*.egg-info src/**/__pycache__ tests/**/__pycache__
+	rm -rf .coverage .mypy_cache .pytest_cache .ruff_cache .venv build dist htmlcov coverage.xml src/*.egg-info
+	find . -name .DS_Store -delete
+	find src tests -type d -name __pycache__ -prune -exec rm -rf {} +

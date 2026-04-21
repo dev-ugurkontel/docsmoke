@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from docsmoke.config import Config
+from docsmoke.exceptions import ConfigError
 from docsmoke.runner import collect_snippets, scan
 
 
@@ -86,6 +89,13 @@ def test_collect_snippets_ignores_explicit_non_markdown_file(tmp_path) -> None:
     config = Config(project_root=tmp_path)
 
     assert collect_snippets([text_file], config=config) == []
+
+
+def test_collect_snippets_rejects_missing_explicit_path(tmp_path) -> None:
+    config = Config(project_root=tmp_path)
+
+    with pytest.raises(ConfigError, match="path does not exist"):
+        collect_snippets([Path("missing.md")], config=config)
 
 
 def test_collect_snippets_ignores_globbed_directories(tmp_path) -> None:

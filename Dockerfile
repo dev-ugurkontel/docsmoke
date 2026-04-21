@@ -19,13 +19,12 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 RUN useradd --create-home --uid 10001 app
-USER app
-WORKDIR /home/app
 
 COPY --from=builder /dist/*.whl /tmp/
-RUN pip install --user /tmp/*.whl && rm /tmp/*.whl
+RUN pip install /tmp/*.whl && rm /tmp/*.whl
 
-ENV PATH="/home/app/.local/bin:${PATH}"
+USER app
+WORKDIR /home/app
 
 ENTRYPOINT ["docsmoke"]
 CMD ["--help"]

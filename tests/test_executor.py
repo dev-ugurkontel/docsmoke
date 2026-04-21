@@ -143,6 +143,20 @@ def test_regex_expectation_failure(tmp_path) -> None:
     assert "regex" in result.message
 
 
+def test_invalid_regex_expectation_is_reported_as_error(tmp_path) -> None:
+    snippet = _snippet(
+        language="bash",
+        executor="sh",
+        code="printf 'hello\\n'",
+        directives=SnippetDirectives(expect_regex=("[",)),
+    )
+
+    result = run_snippet(snippet, project_root=tmp_path, default_timeout=5.0)
+
+    assert result.status is SnippetStatus.error
+    assert "invalid regex" in result.message
+
+
 def test_regex_expectation_success(tmp_path) -> None:
     snippet = _snippet(
         language="bash",
@@ -154,6 +168,36 @@ def test_regex_expectation_success(tmp_path) -> None:
     result = run_snippet(snippet, project_root=tmp_path, default_timeout=5.0)
 
     assert result.status is SnippetStatus.passed
+
+
+def test_missing_cwd_is_reported_as_error(tmp_path) -> None:
+    snippet = _snippet(
+        language="bash",
+        executor="sh",
+        code="printf 'hello\\n'",
+        directives=SnippetDirectives(cwd="missing"),
+    )
+
+    result = run_snippet(snippet, project_root=tmp_path, default_timeout=5.0)
+
+    assert result.status is SnippetStatus.error
+    assert "working directory does not exist" in result.message
+
+
+def test_file_cwd_is_reported_as_error(tmp_path) -> None:
+    not_a_directory = tmp_path / "README.md"
+    not_a_directory.write_text("hello", encoding="utf-8")
+    snippet = _snippet(
+        language="bash",
+        executor="sh",
+        code="printf 'hello\\n'",
+        directives=SnippetDirectives(cwd="README.md"),
+    )
+
+    result = run_snippet(snippet, project_root=tmp_path, default_timeout=5.0)
+
+    assert result.status is SnippetStatus.error
+    assert "working directory is not a directory" in result.message
 
 
 def test_cwd_is_resolved_from_project_root(tmp_path) -> None:

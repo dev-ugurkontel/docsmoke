@@ -7,7 +7,7 @@ Versioning.
 
 ## [Unreleased]
 
-- Nothing yet.
+Nothing yet.
 
 ## [0.1.1] - 2026-04-21
 
@@ -15,6 +15,13 @@ Versioning.
 - Added Bandit security analysis to local and CI quality gates.
 - Hardened GitHub workflows with immutable action pins.
 - Added GHCR container publishing, Pages deployment, support docs, and release docs.
+- Fixed console report rendering so `docsmoke scan` prints a single report.
+- Report missing explicit Markdown paths as clean configuration errors.
+- Report invalid regex expectations and invalid snippet working directories
+  without tracebacks.
+- Hardened fenced-code discovery for nested Markdown examples and tilde fences.
+- Documented repository settings, release channels, and moving action tags.
+- Added Markdown link regression tests and ignored `.DS_Store` artifacts.
 
 ## [0.1.0] - 2026-04-21
 

@@ -16,6 +16,7 @@ DIRECTIVE_PATTERNS = (
     re.compile(r"^\s*//\s*docsmoke:\s*(?P<body>.+?)\s*$"),
     re.compile(r"^\s*<!--\s*docsmoke:\s*(?P<body>.+?)\s*-->\s*$"),
 )
+OPENING_FENCE_PATTERN = re.compile(r"^(?P<indent> {0,3})(?P<fence>`{3,}|~{3,})(?P<info>.*)$")
 
 SUPPORTED_EXECUTORS = {
     "bash": "bash",
@@ -35,15 +36,18 @@ def discover_snippets(path: Path, *, require_directive: bool = True) -> list[Sni
 
     while index < len(lines):
         line = lines[index]
-        if not line.startswith("```"):
+        opening_fence = _parse_opening_fence(line)
+        if opening_fence is None:
             index += 1
             continue
 
+        fence_char, fence_length, info = opening_fence
         opening_line = index + 1
-        info = line[3:].strip()
         index += 1
         body: list[str] = []
-        while index < len(lines) and not lines[index].startswith("```"):
+        while index < len(lines) and not _is_closing_fence(
+            lines[index], fence_char=fence_char, fence_length=fence_length
+        ):
             body.append(lines[index])
             index += 1
 
@@ -74,6 +78,30 @@ def discover_snippets(path: Path, *, require_directive: bool = True) -> list[Sni
         index += 1
 
     return snippets
+
+
+def _parse_opening_fence(line: str) -> tuple[str, int, str] | None:
+    match = OPENING_FENCE_PATTERN.match(line)
+    if match is None:
+        return None
+    fence = match.group("fence")
+    return fence[0], len(fence), match.group("info").strip()
+
+
+def _is_closing_fence(line: str, *, fence_char: str, fence_length: int) -> bool:
+    candidate = line.lstrip(" ")
+    if len(line) - len(candidate) > 3:
+        return False
+
+    marker_count = 0
+    for character in candidate:
+        if character != fence_char:
+            break
+        marker_count += 1
+
+    if marker_count < fence_length:
+        return False
+    return candidate[marker_count:].strip() == ""
 
 
 def _parse_info_string(info: str) -> tuple[str, bool]:
@@ -144,6 +172,8 @@ def _apply_directive_payload(
                 raise DirectiveError(
                     f"{path}:{line}: timeout must be numeric, got {normalized_value!r}"
                 ) from exc
+            if directives.timeout <= 0:
+                raise DirectiveError(f"{path}:{line}: timeout must be greater than 0")
         elif normalized_key == "expect-contains":
             _require_value(has_sep, normalized_value, key=normalized_key, path=path, line=line)
             directives.expect_contains += (normalized_value,)

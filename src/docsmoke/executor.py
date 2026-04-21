@@ -38,6 +38,26 @@ def run_snippet(snippet: Snippet, *, project_root: Path, default_timeout: float)
 
     timeout = snippet.directives.timeout or default_timeout
     cwd = _resolve_cwd(project_root, snippet)
+    if not cwd.exists():
+        return SnippetResult(
+            snippet=snippet,
+            status=SnippetStatus.error,
+            duration_seconds=0.0,
+            exit_code=None,
+            stdout="",
+            stderr="",
+            message=f"working directory does not exist: {cwd}",
+        )
+    if not cwd.is_dir():
+        return SnippetResult(
+            snippet=snippet,
+            status=SnippetStatus.error,
+            duration_seconds=0.0,
+            exit_code=None,
+            stdout="",
+            stderr="",
+            message=f"working directory is not a directory: {cwd}",
+        )
     env = os.environ.copy()
     env["PATH"] = _prepend_executable_dir(env.get("PATH", ""))
     env.update(snippet.directives.env)
@@ -117,7 +137,11 @@ def _evaluate(
             return SnippetStatus.failed, f"missing expected text: {expected!r}"
 
     for pattern in snippet.directives.expect_regex:
-        if re.search(pattern, combined, flags=re.MULTILINE) is None:
+        try:
+            matched = re.search(pattern, combined, flags=re.MULTILINE)
+        except re.error as exc:
+            return SnippetStatus.error, f"invalid regex {pattern!r}: {exc}"
+        if matched is None:
             return SnippetStatus.failed, f"missing regex match: {pattern!r}"
 
     return SnippetStatus.passed, "ok"

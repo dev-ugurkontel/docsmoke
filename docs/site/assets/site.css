@@ -82,6 +82,10 @@ pre {
   border-radius: 18px;
 }
 
+code {
+  font-family: "SFMono-Regular", Consolas, monospace;
+}
+
 a {
   color: var(--accent);
   font-weight: 700;

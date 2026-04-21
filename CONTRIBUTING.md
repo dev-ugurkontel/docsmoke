@@ -31,7 +31,9 @@ make all
 - Default branch: `main`
 - Feature branches: `feat/<slug>` or `fix/<slug>`
 - Release tags: `vMAJOR.MINOR.PATCH`
+- Moving GitHub Action tags: `vMAJOR`, for example `v0`
 - Changelog entries belong under `[Unreleased]` until release day
+- Repository settings are tracked in [docs/REPOSITORY.md](docs/REPOSITORY.md)
 
 ## Good first contributions
 

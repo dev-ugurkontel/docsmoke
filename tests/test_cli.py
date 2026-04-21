@@ -80,6 +80,13 @@ def test_scan_surfaces_config_errors(tmp_path) -> None:
     assert "config file does not exist" in (result.stdout + result.stderr)
 
 
+def test_scan_surfaces_missing_explicit_paths(tmp_path) -> None:
+    result = runner.invoke(app, ["scan", str(tmp_path / "missing.md"), "--quiet"])
+
+    assert result.exit_code == 2
+    assert "path does not exist" in (result.stdout + result.stderr)
+
+
 def test_list_snippets_table_output(tmp_path) -> None:
     markdown_path = tmp_path / "README.md"
     markdown_path.write_text(
@@ -104,6 +111,7 @@ def test_scan_prints_console_report(tmp_path) -> None:
 
     assert result.exit_code == 0
     assert "Summary:" in result.stdout
+    assert result.stdout.count("Summary:") == 1
 
 
 def test_list_snippets_surfaces_config_errors(tmp_path) -> None:

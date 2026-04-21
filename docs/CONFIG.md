@@ -21,6 +21,6 @@ require_directive = true
 
 - `include`: globs used when no explicit scan path is provided
 - `exclude`: globs ignored during discovery
-- `default_timeout`: snippet timeout in seconds
+- `default_timeout`: positive snippet timeout in seconds
 - `fail_fast`: stop the scan after the first failure
 - `require_directive`: only execute snippets explicitly marked for docsmoke

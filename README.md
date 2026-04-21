@@ -2,8 +2,11 @@
 
 [![CI](https://github.com/dev-ugurkontel/docsmoke/actions/workflows/ci.yml/badge.svg)](https://github.com/dev-ugurkontel/docsmoke/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/docsmoke.svg)](https://pypi.org/project/docsmoke/)
+[![Release](https://img.shields.io/github/v/release/dev-ugurkontel/docsmoke?label=release&color=blue)](https://github.com/dev-ugurkontel/docsmoke/releases)
 [![Python](https://img.shields.io/pypi/pyversions/docsmoke.svg)](https://pypi.org/project/docsmoke/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Checked with mypy](https://img.shields.io/badge/mypy-strict-blue)](https://mypy.readthedocs.io/)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 `docsmoke` validates executable Markdown snippets before they drift out of sync
 with the software they document.
@@ -70,7 +73,7 @@ Supported directives:
 
 - `name=<value>`: human-friendly snippet label
 - `cwd=<path>`: working directory relative to the project root
-- `timeout=<seconds>`: per-snippet timeout
+- `timeout=<seconds>`: positive per-snippet timeout
 - `expect-contains=<text>`: required stdout or stderr substring
 - `expect-regex=<pattern>`: required regex match against stdout or stderr
 - `env.NAME=<value>`: environment variable override
@@ -79,8 +82,11 @@ Supported directives:
 
 ## GitHub Action
 
+Use the moving `@v0` tag to receive compatible `0.x` fixes automatically, or
+pin an exact release such as `@v0.1.1` for fully reproducible workflow inputs.
+
 ```yaml
-- uses: dev-ugurkontel/docsmoke@v0.1.1
+- uses: dev-ugurkontel/docsmoke@v0
   with:
     paths: README.md docs examples
 ```
@@ -91,6 +97,8 @@ Supported directives:
 - [docs/USAGE.md](docs/USAGE.md): CLI usage and workflows
 - [docs/CONFIG.md](docs/CONFIG.md): configuration file reference
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): internal architecture
+- [docs/RELEASE.md](docs/RELEASE.md): release and tag-management process
+- [docs/REPOSITORY.md](docs/REPOSITORY.md): repository settings checklist
 - [CONTRIBUTING.md](CONTRIBUTING.md): contribution workflow
 - [SECURITY.md](SECURITY.md): private vulnerability disclosure
 - [SUPPORT.md](SUPPORT.md): usage help and issue routing

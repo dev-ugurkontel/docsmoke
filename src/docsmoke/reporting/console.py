@@ -16,7 +16,7 @@ STATUS_STYLE = {
 
 
 def render_console(report: ScanReport) -> str:
-    console = Console(record=True, width=100)
+    console = Console(width=100)
     table = Table(title="docsmoke")
     table.add_column("Status")
     table.add_column("Snippet")
@@ -33,9 +33,10 @@ def render_console(report: ScanReport) -> str:
             result.message,
         )
 
-    console.print(table)
-    console.print(
-        f"Summary: total={report.total} passed={report.passed} failed={report.failed} "
-        f"skipped={report.skipped} errors={report.errors} duration={report.duration_seconds:.3f}s"
-    )
-    return console.export_text()
+    with console.capture() as capture:
+        console.print(table)
+        console.print(
+            f"Summary: total={report.total} passed={report.passed} failed={report.failed} "
+            f"skipped={report.skipped} errors={report.errors} duration={report.duration_seconds:.3f}s"
+        )
+    return capture.get()

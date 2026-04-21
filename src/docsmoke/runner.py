@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path, PurePosixPath
 from typing import TYPE_CHECKING
 
+from docsmoke.exceptions import ConfigError
 from docsmoke.executor import run_snippet
 from docsmoke.markdown import discover_snippets
 from docsmoke.models import ScanReport, Snippet
@@ -46,6 +47,8 @@ def _resolve_markdown_files(paths: list[Path], *, config: Config) -> list[Path]:
             resolved = (
                 (config.project_root / item).resolve() if not item.is_absolute() else item.resolve()
             )
+            if not resolved.exists():
+                raise ConfigError(f"path does not exist: {resolved}")
             if resolved.is_dir():
                 for child in resolved.rglob("*.md"):
                     if not _is_excluded(child, config=config):
