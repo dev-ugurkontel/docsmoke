@@ -85,3 +85,73 @@ def test_empty_snippet_is_reported_as_error(tmp_path) -> None:
     result = run_snippet(snippet, project_root=tmp_path, default_timeout=5.0)
 
     assert result.status is SnippetStatus.error
+
+
+def test_timeout_is_reported_as_error(tmp_path) -> None:
+    snippet = _snippet(
+        language="python",
+        executor="python",
+        code="import time; time.sleep(0.05)",
+        directives=SnippetDirectives(),
+    )
+
+    result = run_snippet(snippet, project_root=tmp_path, default_timeout=0.001)
+
+    assert result.status is SnippetStatus.error
+    assert "timed out" in result.message
+
+
+def test_missing_shell_is_reported_as_error(tmp_path) -> None:
+    snippet = _snippet(
+        language="bash",
+        executor="sh",
+        code="printf 'hello\\n'",
+        directives=SnippetDirectives(shell="definitely-not-a-shell"),
+    )
+
+    result = run_snippet(snippet, project_root=tmp_path, default_timeout=5.0)
+
+    assert result.status is SnippetStatus.error
+    assert "executor not available" in result.message
+
+
+def test_regex_expectation_failure(tmp_path) -> None:
+    snippet = _snippet(
+        language="bash",
+        executor="sh",
+        code="printf 'hello\\n'",
+        directives=SnippetDirectives(expect_regex=(r"world\d+",)),
+    )
+
+    result = run_snippet(snippet, project_root=tmp_path, default_timeout=5.0)
+
+    assert result.status is SnippetStatus.failed
+    assert "regex" in result.message
+
+
+def test_cwd_is_resolved_from_project_root(tmp_path) -> None:
+    working_dir = tmp_path / "nested"
+    working_dir.mkdir()
+    snippet = _snippet(
+        language="bash",
+        executor="sh",
+        code="pwd",
+        directives=SnippetDirectives(cwd="nested", expect_contains=(str(working_dir),)),
+    )
+
+    result = run_snippet(snippet, project_root=tmp_path, default_timeout=5.0)
+
+    assert result.status is SnippetStatus.passed
+
+
+def test_executor_prepends_current_python_bin_to_path(tmp_path) -> None:
+    snippet = _snippet(
+        language="bash",
+        executor="sh",
+        code="docsmoke --version",
+        directives=SnippetDirectives(expect_contains=("docsmoke 0.1.0",)),
+    )
+
+    result = run_snippet(snippet, project_root=tmp_path, default_timeout=5.0)
+
+    assert result.status is SnippetStatus.passed

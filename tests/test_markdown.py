@@ -68,3 +68,64 @@ def test_html_comment_directives_are_supported(tmp_path) -> None:
     snippets = discover_snippets(path)
 
     assert snippets[0].directives.expect_contains == ("ok",)
+
+
+def test_unknown_directive_raises(tmp_path) -> None:
+    path = tmp_path / "README.md"
+    path.write_text(
+        "```bash docsmoke\n# docsmoke: unsupported=yes\nprintf 'hello\\n'\n```\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(DirectiveError):
+        discover_snippets(path)
+
+
+def test_env_and_skip_directives_are_parsed(tmp_path) -> None:
+    path = tmp_path / "README.md"
+    path.write_text(
+        "\n".join(
+            [
+                "```bash docsmoke",
+                "# docsmoke: env.NAME=value; skip=false; shell=sh",
+                "printf 'hello\\n'",
+                "```",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    snippet = discover_snippets(path)[0]
+
+    assert snippet.directives.env == {"NAME": "value"}
+    assert snippet.directives.skip is False
+    assert snippet.directives.shell == "sh"
+
+
+def test_invalid_boolean_directive_raises(tmp_path) -> None:
+    path = tmp_path / "README.md"
+    path.write_text(
+        "```bash docsmoke\n# docsmoke: skip=maybe\nprintf 'hello\\n'\n```\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(DirectiveError):
+        discover_snippets(path)
+
+
+def test_directive_without_value_raises(tmp_path) -> None:
+    path = tmp_path / "README.md"
+    path.write_text(
+        "```bash docsmoke\n# docsmoke: timeout=\nprintf 'hello\\n'\n```\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(DirectiveError):
+        discover_snippets(path)
+
+
+def test_unsupported_language_is_ignored(tmp_path) -> None:
+    path = tmp_path / "README.md"
+    path.write_text("```ruby docsmoke\nputs 'hello'\n```\n", encoding="utf-8")
+
+    assert discover_snippets(path) == []

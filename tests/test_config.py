@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from docsmoke.config import Config, load
@@ -53,3 +55,38 @@ def test_invalid_timeout_raises_config_error(tmp_path) -> None:
 def test_missing_config_file_raises(tmp_path) -> None:
     with pytest.raises(ConfigError):
         load(tmp_path / "missing.toml")
+
+
+def test_config_validates_positive_timeout() -> None:
+    with pytest.raises(ConfigError):
+        Config(project_root=Path.cwd(), default_timeout=0)
+
+
+def test_config_validates_non_empty_include() -> None:
+    with pytest.raises(ConfigError):
+        Config(project_root=Path.cwd(), include=())
+
+
+def test_load_rejects_invalid_boolean_values(tmp_path) -> None:
+    path = tmp_path / "docsmoke.toml"
+    path.write_text("fail_fast = 'no'\n", encoding="utf-8")
+
+    with pytest.raises(ConfigError):
+        load(path)
+
+
+def test_load_accepts_string_include(tmp_path) -> None:
+    path = tmp_path / "docsmoke.toml"
+    path.write_text("include = 'guides/*.md'\n", encoding="utf-8")
+
+    config = load(path)
+
+    assert config.include == ("guides/*.md",)
+
+
+def test_load_rejects_invalid_docsmoke_section(tmp_path) -> None:
+    path = tmp_path / "pyproject.toml"
+    path.write_text("[tool]\ndocsmoke = 'bad'\n", encoding="utf-8")
+
+    with pytest.raises(ConfigError):
+        load(path)

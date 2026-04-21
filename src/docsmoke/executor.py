@@ -7,12 +7,9 @@ import re
 import subprocess
 import sys
 import time
-from typing import TYPE_CHECKING
+from pathlib import Path
 
 from docsmoke.models import Snippet, SnippetResult, SnippetStatus
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 
 def run_snippet(snippet: Snippet, *, project_root: Path, default_timeout: float) -> SnippetResult:
@@ -42,6 +39,7 @@ def run_snippet(snippet: Snippet, *, project_root: Path, default_timeout: float)
     timeout = snippet.directives.timeout or default_timeout
     cwd = _resolve_cwd(project_root, snippet)
     env = os.environ.copy()
+    env["PATH"] = _prepend_executable_dir(env.get("PATH", ""))
     env.update(snippet.directives.env)
     command = _build_command(snippet)
 
@@ -131,3 +129,10 @@ def _coerce_output(value: bytes | str | None) -> str:
     if isinstance(value, bytes):
         return value.decode(errors="replace")
     return value
+
+
+def _prepend_executable_dir(path_value: str) -> str:
+    executable_dir = Path(sys.executable).parent
+    if path_value:
+        return f"{executable_dir}{os.pathsep}{path_value}"
+    return str(executable_dir)

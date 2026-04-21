@@ -126,7 +126,8 @@ def _apply_directive_payload(
         if not item:
             continue
         key, has_sep, value = item.partition("=")
-        normalized_key = key.strip().lower()
+        raw_key = key.strip()
+        normalized_key = raw_key.lower()
         normalized_value = value.strip()
 
         if normalized_key == "name":
@@ -158,7 +159,7 @@ def _apply_directive_payload(
             )
         elif normalized_key.startswith("env."):
             _require_value(has_sep, normalized_value, key=normalized_key, path=path, line=line)
-            env_name = normalized_key[4:]
+            env_name = raw_key[4:]
             if not env_name:
                 raise DirectiveError(f"{path}:{line}: env directives require a variable name")
             directives.env[env_name] = normalized_value

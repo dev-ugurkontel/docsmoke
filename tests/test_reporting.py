@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from docsmoke.models import ScanReport, Snippet, SnippetDirectives, SnippetResult, SnippetStatus
 from docsmoke.reporting import render
 
@@ -54,3 +56,20 @@ def test_render_console_summary() -> None:
 
     assert "Summary:" in rendered
     assert "passed" in rendered
+
+
+def test_render_markdown_all_passes() -> None:
+    report = ScanReport(results=[_result(SnippetStatus.passed, "ok")])
+    report.finish()
+
+    rendered = render(report, "markdown")
+
+    assert "All snippets passed." in rendered
+
+
+def test_unknown_renderer_raises() -> None:
+    report = ScanReport()
+    report.finish()
+
+    with pytest.raises(ValueError):
+        render(report, "xml")

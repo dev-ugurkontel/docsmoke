@@ -98,6 +98,10 @@ def scan(
     ] = None,
 ) -> None:
     """Scan Markdown files, execute snippets, and report the results."""
+    if output is not None and fmt not in {"json", "markdown"}:
+        typer.secho("--format must be 'json' or 'markdown'", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=2)
+
     try:
         paths = paths or []
         config = _resolve_config(config_path, all_supported=all_supported, fail_fast=fail_fast)
@@ -110,9 +114,6 @@ def scan(
         typer.echo(render(report, "console"))
 
     if output is not None:
-        if fmt not in {"json", "markdown"}:
-            typer.secho("--format must be 'json' or 'markdown'", fg=typer.colors.RED, err=True)
-            raise typer.Exit(code=2)
         write(report, output, fmt)
 
     if report.has_failures:
