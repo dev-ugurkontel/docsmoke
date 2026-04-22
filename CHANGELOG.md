@@ -14,6 +14,8 @@ Versioning.
 - Refreshed the GitHub Pages site with richer project positioning, release
   surfaces, sample output, and documentation links.
 - Added Dependabot tracking for Dockerfile base image updates.
+- Added Python 3.14 CI coverage and a container-image build check for
+  Dockerfile changes.
 
 ## [1.0.0] - 2026-04-21
 
